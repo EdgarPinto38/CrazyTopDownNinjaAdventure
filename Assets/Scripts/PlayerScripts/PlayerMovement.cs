@@ -194,6 +194,24 @@ public class PlayerMovement : MonoBehaviour
         shieldRegenDelay -= amount;
     }
 
+    public float GetCurrentHealth()
+    {
+        return health;
+    }
 
+    public float GetMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    public float GetMaxShield()
+    {
+        return maxShield;
+    }
+
+    public float GetShieldRegenDelay()
+    {
+        return shieldRegenDelay;
+    }
 
 }

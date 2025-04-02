@@ -25,6 +25,10 @@ public class WaveManager : MonoBehaviour
     public TMP_Text waveText;
     public TMP_Text scoreText;
     public TMP_Text coinText;
+    public TMP_Text lifeText;
+    public TMP_Text shieldText;
+    public TMP_Text regenTimeText;
+    public TMP_Text missilesText;
     public TMP_Text shopMessage;
 
     public PlayerMovement player;
@@ -132,7 +136,14 @@ public class WaveManager : MonoBehaviour
         if (waveText != null) waveText.text = "Oleada: " + waveNumber;
         if (scoreText != null) scoreText.text = "Puntuación: " + score;
         if (coinText != null) coinText.text = "Monedas: " + player.GetCoinCount();
+
+        // Actualizar estadísticas del jugador
+        if (lifeText != null) lifeText.text = "Vida: " + player.GetCurrentHealth() + " / " + player.GetMaxHealth();
+        if (shieldText != null) shieldText.text = "Escudo Máximo: " + player.GetMaxShield();
+        if (regenTimeText != null) regenTimeText.text = "Tiempo de Regeneración: " + player.GetShieldRegenDelay().ToString("F1") + " segundos";
+        if (missilesText != null) missilesText.text = "Misiles: " + playerShooting.GetCurrentMissiles() + " / " + playerShooting.GetMaxMissiles();
     }
+
 
     // Método para pasar a la siguiente oleada al presionar el botón
     public void OnNextWaveButtonClicked()
@@ -145,11 +156,12 @@ public class WaveManager : MonoBehaviour
     // Opciones de la tienda
     public void BuyRegenerateHealth()
     {
-        if (player.GetCoinCount() >= 10)
+        if (player.GetCoinCount() >= 1)
         {
             player.SpendCoins(10);
             player.RegenerateHealth();
             shopMessage.text = "Vida regenerada.";
+            UpdateWavePanel(); // Actualizar la interfaz de usuario
         }
         else
         {
@@ -164,6 +176,7 @@ public class WaveManager : MonoBehaviour
             player.SpendCoins(1);
             player.IncreaseMaxHealth(20);
             shopMessage.text = "Vida máxima aumentada.";
+            UpdateWavePanel(); // Actualizar la interfaz de usuario
         }
         else
         {
@@ -178,6 +191,7 @@ public class WaveManager : MonoBehaviour
             player.SpendCoins(1);
             player.IncreaseMaxShield(10);
             shopMessage.text = "Escudo máximo aumentado.";
+            UpdateWavePanel(); // Actualizar la interfaz de usuario
         }
         else
         {
@@ -192,6 +206,7 @@ public class WaveManager : MonoBehaviour
             player.SpendCoins(1);
             playerShooting.RefillMissiles();
             shopMessage.text = "Misiles recargados.";
+            UpdateWavePanel(); // Actualizar la interfaz de usuario
         }
         else
         {
@@ -206,6 +221,7 @@ public class WaveManager : MonoBehaviour
             player.SpendCoins(1);
             playerShooting.IncreaseMaxMissiles(2);
             shopMessage.text = "Capacidad de misiles aumentada.";
+            UpdateWavePanel(); // Actualizar la interfaz de usuario
         }
         else
         {
@@ -220,6 +236,7 @@ public class WaveManager : MonoBehaviour
             player.SpendCoins(1);
             player.ReduceShieldRegenDelay(1f);
             shopMessage.text = "Tiempo de regeneración de escudo reducido.";
+            UpdateWavePanel(); // Actualizar la interfaz de usuario
         }
         else
         {

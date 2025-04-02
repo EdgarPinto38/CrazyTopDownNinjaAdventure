@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerShooting : MonoBehaviour
 {
@@ -17,12 +18,16 @@ public class PlayerShooting : MonoBehaviour
     private bool isShootingBullet = false; // Verifica si se está manteniendo presionado el clic izquierdo
     private bool isShootingMissile = false; // Verifica si se está manteniendo presionado el clic derecho
 
+    public TMP_Text missilesText;
+
     void Start()
     {
         // Inicializar la cantidad de misiles disponibles y los tiempos de disparo
         currentMissiles = maxMissiles;
         lastBulletTime = -bulletFireRate; // Permitir disparar balas inmediatamente al inicio
         lastMissileTime = -missileFireRate; // Permitir disparar misiles inmediatamente al inicio
+
+        missilesText.text = maxMissiles.ToString();
     }
 
     void Update()
@@ -82,6 +87,7 @@ public class PlayerShooting : MonoBehaviour
                 Shoot(missilePrefab, missileSpeed); // Disparar un misil
                 lastMissileTime = Time.time; // Actualizar la última vez que se disparó
                 currentMissiles--; // Reducir la cantidad de misiles disponibles
+                missilesText.text = currentMissiles.ToString();
             }
             yield return null; // Esperar al siguiente fotograma
         }
@@ -108,10 +114,23 @@ public class PlayerShooting : MonoBehaviour
     public void RefillMissiles()
     {
         currentMissiles = maxMissiles;
+        missilesText.text = currentMissiles.ToString();
     }
 
     public void IncreaseMaxMissiles(int amount)
     {
         maxMissiles += amount;
     }
+
+    public int GetCurrentMissiles()
+    {
+        return currentMissiles;
+    }
+
+    public int GetMaxMissiles()
+    {
+        return maxMissiles;
+    }
+
+
 }
