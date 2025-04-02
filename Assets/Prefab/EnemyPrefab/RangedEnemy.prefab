@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6684991714829032986}
   - component: {fileID: 5619416273601277778}
   - component: {fileID: 278682750988630675}
+  - component: {fileID: 5335539159580300553}
   - component: {fileID: -5910507452011021308}
   m_Layer: 7
   m_Name: RangedEnemy
@@ -163,6 +164,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &5335539159580300553
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7993845926068555921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3ba272c03f02244c90c8d9ca0cdbbe6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  speed: 3
 --- !u!114 &-5910507452011021308
 MonoBehaviour:
   m_ObjectHideFlags: 0

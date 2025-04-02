@@ -6,40 +6,51 @@ public class WaveManager : MonoBehaviour
     public GameObject meleeEnemyPrefab; // Prefab de enemigo cuerpo a cuerpo
     public GameObject rangedEnemyPrefab; // Prefab de enemigo que dispara
     public GameObject explodingEnemyPrefab; // Prefab de enemigo que explota
-    public int baseEnemyCount = 5; // Número base de enemigos por oleada
-    public float spawnInterval = 1f; // Tiempo entre cada aparición de enemigos en una oleada
 
-    // Definición del área de spawn (rectangular)
+    public int baseEnemyCount = 5; // Número base de enemigos por oleada
+    public float spawnInterval = 1f; // Tiempo entre cada aparición de enemigos
+
+    public GameObject wavePanel; // Panel de pausa entre oleadas
+    public GameObject nextWaveButton; // Botón para continuar
+
     public Vector2 spawnAreaCenter; // Centro del área de spawn
-    public Vector2 spawnAreaSize;   // Tamaño del área de spawn (ancho y alto)
+    public Vector2 spawnAreaSize;   // Tamaño del área de spawn
 
     private int waveNumber = 0; // Número de la oleada actual
+    private int totalEnemiesInWave; // Total de enemigos que deben aparecer en la oleada
+    private int enemiesRemaining; // Enemigos restantes en la oleada
+    private bool isPaused = false; // Indica si el juego está pausado
+
+    private int score = 0; // Puntuación acumulada
 
     void Start()
     {
-        StartNextWave(); // Iniciar la primera oleada
+        // Asegurar que el panel esté desactivado inicialmente
+        if (wavePanel != null)
+        {
+            wavePanel.SetActive(false);
+        }
+        StartNextWave(); // Comenzar la primera oleada
     }
 
     void StartNextWave()
     {
         waveNumber++; // Incrementar el número de oleada
+        totalEnemiesInWave = baseEnemyCount + waveNumber; // Calcular el total de enemigos de la oleada
+        enemiesRemaining = totalEnemiesInWave; // Inicializar los enemigos restantes
+        isPaused = false; // Reanudar el juego
+        Time.timeScale = 1f; // Reanudar el tiempo
+
         StartCoroutine(SpawnWave());
     }
 
     IEnumerator SpawnWave()
     {
-        // Calcular cantidad de enemigos para esta oleada
-        int enemyCount = baseEnemyCount + waveNumber * 2; // Incremento de enemigos por oleada
-
-        for (int i = 0; i < enemyCount; i++)
+        for (int i = 0; i < totalEnemiesInWave; i++)
         {
-            SpawnEnemy(); // Hacer aparecer un enemigo
-            yield return new WaitForSeconds(spawnInterval); // Esperar tiempo entre apariciones
+            SpawnEnemy(); // Instanciar un enemigo
+            yield return new WaitForSeconds(spawnInterval); // Tiempo entre apariciones
         }
-
-        // Esperar antes de comenzar la siguiente oleada
-        yield return new WaitForSeconds(5f); // Tiempo de descanso entre oleadas
-        StartNextWave(); // Comenzar la siguiente oleada
     }
 
     void SpawnEnemy()
@@ -51,12 +62,44 @@ public class WaveManager : MonoBehaviour
         Vector2 spawnPosition = GetRandomSpawnPosition();
 
         // Instanciar el enemigo en la posición aleatoria
-        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+        GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+
+        // Ajustar estadísticas del enemigo ligeramente
+        AdjustEnemyStats(enemy);
+
+        // Registrar la muerte del enemigo para reducir el contador y sumar puntos
+        EnemyBase enemyBase = enemy.GetComponent<EnemyBase>();
+        if (enemyBase != null)
+        {
+            enemyBase.OnDestroyEvent += OnEnemyDestroyed;
+        }
+    }
+
+    void OnEnemyDestroyed()
+    {
+        enemiesRemaining--; // Reducir el contador de enemigos restantes
+        score++; // Incrementar la puntuación
+        Debug.Log("Enemigos restantes: " + enemiesRemaining);
+        Debug.Log("Puntuación actual: " + score);
+
+        if (enemiesRemaining <= 0)
+        {
+            EndWave();
+        }
+    }
+
+    void AdjustEnemyStats(GameObject enemy)
+    {
+        EnemyBase enemyBase = enemy.GetComponent<EnemyBase>();
+        if (enemyBase != null)
+        {
+            enemyBase.health += waveNumber * 5; // Incrementar vida
+            enemyBase.speed += waveNumber * 0.1f; // Incrementar velocidad
+        }
     }
 
     GameObject GetRandomEnemyPrefab()
     {
-        // Seleccionar un tipo de enemigo aleatoriamente
         int randomIndex = Random.Range(0, 3);
         switch (randomIndex)
         {
@@ -69,16 +112,42 @@ public class WaveManager : MonoBehaviour
 
     Vector2 GetRandomSpawnPosition()
     {
-        // Generar una posición aleatoria dentro del área rectangular delimitada
         float randomX = Random.Range(spawnAreaCenter.x - spawnAreaSize.x / 2, spawnAreaCenter.x + spawnAreaSize.x / 2);
         float randomY = Random.Range(spawnAreaCenter.y - spawnAreaSize.y / 2, spawnAreaCenter.y + spawnAreaSize.y / 2);
         return new Vector2(randomX, randomY);
     }
 
+    void EndWave()
+    {
+        isPaused = true;
+        wavePanel.SetActive(true);
+        Time.timeScale = 0f;
+        Debug.Log("Oleada " + waveNumber + " completada.");
+        Debug.Log("Puntuación final: " + score);
+        Debug.Log("Panel activado: " + wavePanel.activeSelf);
+    }
+
+    public void OnNextWaveButtonClicked()
+    {
+        // Esconder el panel y comenzar la siguiente oleada
+        wavePanel.SetActive(false);
+        StartNextWave();
+    }
+
     private void OnDrawGizmosSelected()
     {
-        // Visualizar el área de spawn en el editor
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(spawnAreaCenter, spawnAreaSize);
+    }
+
+    // Métodos para acceder a la puntuación y la oleada actual
+    public int GetScore()
+    {
+        return score; // Devuelve la puntuación acumulada
+    }
+
+    public int GetCurrentWave()
+    {
+        return waveNumber; // Devuelve la oleada actual
     }
 }

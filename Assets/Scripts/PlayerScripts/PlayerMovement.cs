@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // Necesario para usar TextMeshPro
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -21,13 +22,29 @@ public class PlayerMovement : MonoBehaviour
     public Image lifeBar; // Barra de vida
     public Image shieldBar; // Barra de escudo
 
+    // Panel de Game Over
+    public GameObject gameOverPanel;
+    public TMP_Text waveText; // Texto para mostrar la oleada alcanzada (TextMeshPro)
+    public TMP_Text scoreText; // Texto para mostrar la puntuación (TextMeshPro)
+
+    private WaveManager waveManager; // Referencia al WaveManager
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         lastDamageTime = Time.time; // Inicializar el tiempo del último daño
 
-        // Asegurarse de inicializar las barras correctamente
+        // Inicializar las barras de vida y escudo
         UpdateUI();
+
+        // Ocultar el panel de Game Over al inicio
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(false);
+        }
+
+        // Buscar el WaveManager en la escena
+        waveManager = FindObjectOfType<WaveManager>();
     }
 
     void Update()
@@ -64,18 +81,17 @@ public class PlayerMovement : MonoBehaviour
 
         if (shield > 0)
         {
-            // Primero reducir el daño al escudo
+            // Reducir el daño al escudo primero
             shield -= damage;
             if (shield < 0)
             {
-                // Si queda daño restante después de agotar el escudo, aplicarlo a la vida
-                health += shield; // `shield` es negativo en este punto
+                health += shield; // Daño restante al jugador
                 shield = 0;
             }
         }
         else
         {
-            // Si no hay escudo, reducir directamente la vida
+            // Reducir directamente la vida si no hay escudo
             health -= damage;
         }
 
@@ -105,6 +121,19 @@ public class PlayerMovement : MonoBehaviour
     private void Die()
     {
         Debug.Log("El jugador ha muerto.");
-        // Aquí puedes añadir lógica para reiniciar el nivel o mostrar Game Over
+        Time.timeScale = 0f; // Detener el tiempo
+
+        // Activar el panel de Game Over
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+
+            // Mostrar la oleada alcanzada y la puntuación
+            if (waveManager != null)
+            {
+                waveText.text = "Oleada alcanzada: " + waveManager.GetCurrentWave();
+                scoreText.text = "Puntuación: " + waveManager.GetScore();
+            }
+        }
     }
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1503942185003746575}
   - component: {fileID: 1597729136360136229}
   - component: {fileID: 6386490568877887155}
+  - component: {fileID: -2309878280642737595}
   - component: {fileID: 7991359986669897138}
   m_Layer: 7
   m_Name: NinjaBomb
@@ -163,6 +164,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-2309878280642737595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6391322297058974613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3ba272c03f02244c90c8d9ca0cdbbe6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
+  speed: 3
 --- !u!114 &7991359986669897138
 MonoBehaviour:
   m_ObjectHideFlags: 0

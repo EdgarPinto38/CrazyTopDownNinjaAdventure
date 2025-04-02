@@ -6,6 +6,10 @@ public class EnemyBase : MonoBehaviour
     public float speed = 3f; // Velocidad de movimiento
     protected Transform target; // Referencia al objetivo (jugador)
 
+    // Evento para notificar al WaveManager cuando el enemigo es destruido
+    public delegate void EnemyDestroyed();
+    public event EnemyDestroyed OnDestroyEvent;
+
     private void Start()
     {
         // Encontrar al jugador por referencia directa al componente PlayerMovement
@@ -39,6 +43,7 @@ public class EnemyBase : MonoBehaviour
 
     public virtual void Die()
     {
+        OnDestroyEvent?.Invoke(); // Notificar al WaveManager
         Debug.Log(gameObject.name + " ha sido destruido.");
         Destroy(gameObject);
     }
