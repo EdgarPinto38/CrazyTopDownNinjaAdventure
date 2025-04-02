@@ -1,73 +1,95 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class WaveManager : MonoBehaviour
 {
-    public GameObject meleeEnemyPrefab; // Prefab de enemigo cuerpo a cuerpo
-    public GameObject rangedEnemyPrefab; // Prefab de enemigo que dispara
-    public GameObject explodingEnemyPrefab; // Prefab de enemigo que explota
+    public GameObject meleeEnemyPrefab;
+    public GameObject rangedEnemyPrefab;
+    public GameObject explodingEnemyPrefab;
 
-    public int baseEnemyCount = 5; // Número base de enemigos por oleada
-    public float spawnInterval = 1f; // Tiempo entre cada aparición de enemigos
+    public int baseEnemyCount = 5;
+    public float spawnInterval = 1f;
 
-    public GameObject wavePanel; // Panel de pausa entre oleadas
-    public GameObject nextWaveButton; // Botón para continuar
+    public GameObject wavePanel;
+    public GameObject nextWaveButton;
 
-    public Vector2 spawnAreaCenter; // Centro del área de spawn
-    public Vector2 spawnAreaSize;   // Tamaño del área de spawn
+    public Vector2 spawnAreaCenter;
+    public Vector2 spawnAreaSize;
 
-    private int waveNumber = 0; // Número de la oleada actual
-    private int totalEnemiesInWave; // Total de enemigos que deben aparecer en la oleada
-    private int enemiesRemaining; // Enemigos restantes en la oleada
-    private bool isPaused = false; // Indica si el juego está pausado
+    private int waveNumber = 0;
+    private int totalEnemiesInWave;
+    private int enemiesRemaining;
+    private int score = 0;
 
-    private int score = 0; // Puntuación acumulada
+    public TMP_Text waveText;
+    public TMP_Text scoreText;
+    public TMP_Text coinText;
+    public TMP_Text shopMessage;
+
+    public PlayerMovement player;
+    public PlayerShooting playerShooting;
 
     void Start()
     {
-        // Asegurar que el panel esté desactivado inicialmente
         if (wavePanel != null)
         {
             wavePanel.SetActive(false);
         }
-        StartNextWave(); // Comenzar la primera oleada
+        StartNextWave();
     }
 
     void StartNextWave()
     {
-        waveNumber++; // Incrementar el número de oleada
-        totalEnemiesInWave = baseEnemyCount + waveNumber; // Calcular el total de enemigos de la oleada
-        enemiesRemaining = totalEnemiesInWave; // Inicializar los enemigos restantes
-        isPaused = false; // Reanudar el juego
-        Time.timeScale = 1f; // Reanudar el tiempo
+        waveNumber++; // Incrementar el número de la oleada
+        totalEnemiesInWave = baseEnemyCount + waveNumber; // Calcular el total de enemigos para esta oleada
+        enemiesRemaining = totalEnemiesInWave; // Reiniciar el contador de enemigos restantes
 
+        // Limpiar el escenario antes de comenzar la nueva oleada
+        ClearEnemies();
+
+        Time.timeScale = 1f; // Reanudar el tiempo
+        Debug.Log("Preparando oleada: " + waveNumber);
+
+        // Iniciar una corutina con un retraso antes de spawnear enemigos
+        StartCoroutine(DelayedSpawn());
+    }
+
+    // Corutina para retrasar el spawn de enemigos
+    IEnumerator DelayedSpawn()
+    {
+        yield return new WaitForSeconds(3f); // Esperar 3 segundos
+        Debug.Log("Comenzando spawn de enemigos para la oleada: " + waveNumber);
         StartCoroutine(SpawnWave());
+    }
+
+    // Método para eliminar todos los enemigos del escenario
+    void ClearEnemies()
+    {
+        EnemyBase[] enemies = FindObjectsOfType<EnemyBase>();
+        foreach (EnemyBase enemy in enemies)
+        {
+            Destroy(enemy.gameObject); // Destruir el objeto del enemigo
+        }
+
+        Debug.Log("Escenario limpiado: todos los enemigos eliminados.");
     }
 
     IEnumerator SpawnWave()
     {
         for (int i = 0; i < totalEnemiesInWave; i++)
         {
-            SpawnEnemy(); // Instanciar un enemigo
-            yield return new WaitForSeconds(spawnInterval); // Tiempo entre apariciones
+            SpawnEnemy();
+            yield return new WaitForSeconds(spawnInterval);
         }
     }
 
     void SpawnEnemy()
     {
-        // Elegir aleatoriamente el tipo de enemigo
         GameObject enemyPrefab = GetRandomEnemyPrefab();
-
-        // Elegir una posición aleatoria dentro del área delimitada
         Vector2 spawnPosition = GetRandomSpawnPosition();
-
-        // Instanciar el enemigo en la posición aleatoria
         GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
 
-        // Ajustar estadísticas del enemigo ligeramente
-        AdjustEnemyStats(enemy);
-
-        // Registrar la muerte del enemigo para reducir el contador y sumar puntos
         EnemyBase enemyBase = enemy.GetComponent<EnemyBase>();
         if (enemyBase != null)
         {
@@ -77,24 +99,131 @@ public class WaveManager : MonoBehaviour
 
     void OnEnemyDestroyed()
     {
-        enemiesRemaining--; // Reducir el contador de enemigos restantes
-        score++; // Incrementar la puntuación
+        enemiesRemaining--;
+        score++;
         Debug.Log("Enemigos restantes: " + enemiesRemaining);
         Debug.Log("Puntuación actual: " + score);
 
         if (enemiesRemaining <= 0)
         {
             EndWave();
+            Debug.Log("Oleada terminada.");
         }
     }
 
-    void AdjustEnemyStats(GameObject enemy)
+    void EndWave()
     {
-        EnemyBase enemyBase = enemy.GetComponent<EnemyBase>();
-        if (enemyBase != null)
+        if (wavePanel != null)
         {
-            enemyBase.health += waveNumber * 5; // Incrementar vida
-            enemyBase.speed += waveNumber * 0.1f; // Incrementar velocidad
+            wavePanel.SetActive(true);
+            Debug.Log("Panel de oleadas activado.");
+        }
+        else
+        {
+            Debug.LogError("El panel de oleadas no está asignado en el inspector.");
+        }
+
+        Time.timeScale = 0f;
+        UpdateWavePanel();
+    }
+
+    void UpdateWavePanel()
+    {
+        if (waveText != null) waveText.text = "Oleada: " + waveNumber;
+        if (scoreText != null) scoreText.text = "Puntuación: " + score;
+        if (coinText != null) coinText.text = "Monedas: " + player.GetCoinCount();
+    }
+
+    // Método para pasar a la siguiente oleada al presionar el botón
+    public void OnNextWaveButtonClicked()
+    {
+        Debug.Log("Botón presionado: avanzando a la siguiente oleada.");
+        wavePanel.SetActive(false);
+        StartNextWave();
+    }
+
+    // Opciones de la tienda
+    public void BuyRegenerateHealth()
+    {
+        if (player.GetCoinCount() >= 10)
+        {
+            player.SpendCoins(10);
+            player.RegenerateHealth();
+            shopMessage.text = "Vida regenerada.";
+        }
+        else
+        {
+            shopMessage.text = "No tienes suficientes monedas.";
+        }
+    }
+
+    public void BuyIncreaseMaxHealth()
+    {
+        if (player.GetCoinCount() >= 1)
+        {
+            player.SpendCoins(1);
+            player.IncreaseMaxHealth(20);
+            shopMessage.text = "Vida máxima aumentada.";
+        }
+        else
+        {
+            shopMessage.text = "No tienes suficientes monedas.";
+        }
+    }
+
+    public void BuyIncreaseMaxShield()
+    {
+        if (player.GetCoinCount() >= 1)
+        {
+            player.SpendCoins(1);
+            player.IncreaseMaxShield(10);
+            shopMessage.text = "Escudo máximo aumentado.";
+        }
+        else
+        {
+            shopMessage.text = "No tienes suficientes monedas.";
+        }
+    }
+
+    public void BuyRefillMissiles()
+    {
+        if (player.GetCoinCount() >= 1)
+        {
+            player.SpendCoins(1);
+            playerShooting.RefillMissiles();
+            shopMessage.text = "Misiles recargados.";
+        }
+        else
+        {
+            shopMessage.text = "No tienes suficientes monedas.";
+        }
+    }
+
+    public void BuyIncreaseMaxMissiles()
+    {
+        if (player.GetCoinCount() >= 1)
+        {
+            player.SpendCoins(1);
+            playerShooting.IncreaseMaxMissiles(2);
+            shopMessage.text = "Capacidad de misiles aumentada.";
+        }
+        else
+        {
+            shopMessage.text = "No tienes suficientes monedas.";
+        }
+    }
+
+    public void BuyReduceShieldRegenTime()
+    {
+        if (player.GetCoinCount() >= 1)
+        {
+            player.SpendCoins(1);
+            player.ReduceShieldRegenDelay(1f);
+            shopMessage.text = "Tiempo de regeneración de escudo reducido.";
+        }
+        else
+        {
+            shopMessage.text = "No tienes suficientes monedas.";
         }
     }
 
@@ -107,7 +236,7 @@ public class WaveManager : MonoBehaviour
             case 1: return rangedEnemyPrefab;
             case 2: return explodingEnemyPrefab;
         }
-        return meleeEnemyPrefab; // Valor por defecto
+        return meleeEnemyPrefab;
     }
 
     Vector2 GetRandomSpawnPosition()
@@ -117,37 +246,13 @@ public class WaveManager : MonoBehaviour
         return new Vector2(randomX, randomY);
     }
 
-    void EndWave()
-    {
-        isPaused = true;
-        wavePanel.SetActive(true);
-        Time.timeScale = 0f;
-        Debug.Log("Oleada " + waveNumber + " completada.");
-        Debug.Log("Puntuación final: " + score);
-        Debug.Log("Panel activado: " + wavePanel.activeSelf);
-    }
-
-    public void OnNextWaveButtonClicked()
-    {
-        // Esconder el panel y comenzar la siguiente oleada
-        wavePanel.SetActive(false);
-        StartNextWave();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(spawnAreaCenter, spawnAreaSize);
-    }
-
-    // Métodos para acceder a la puntuación y la oleada actual
     public int GetScore()
     {
-        return score; // Devuelve la puntuación acumulada
+        return score;
     }
 
     public int GetCurrentWave()
     {
-        return waveNumber; // Devuelve la oleada actual
+        return waveNumber;
     }
 }

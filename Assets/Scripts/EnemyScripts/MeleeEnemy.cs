@@ -85,7 +85,6 @@ public class MeleeEnemy : EnemyBase
             player.TakeDamage(meleeDamage);
         }
 
-        // Opcional: Destruirse a sí mismo tras el ataque
-        Die();
+       
     }
 }

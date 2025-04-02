@@ -29,6 +29,11 @@ public class PlayerMovement : MonoBehaviour
 
     private WaveManager waveManager; // Referencia al WaveManager
 
+    public TMP_Text coinCounterText; // Texto para mostrar el contador de monedas
+    private int coinCount = 0; // Contador de monedas
+
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -118,6 +123,23 @@ public class PlayerMovement : MonoBehaviour
         shieldBar.fillAmount = shield / maxShield;
     }
 
+    public void CollectCoin()
+    {
+        coinCount++; // Incrementar el contador de monedas
+        UpdateCoinUI(); // Actualizar la UI
+    }
+
+    private void UpdateCoinUI()
+    {
+        if (coinCounterText != null)
+        {
+            //coinCounterText.text = "Monedas: " + coinCount;
+            coinCounterText.text = coinCount.ToString();
+        }
+    }
+
+
+
     private void Die()
     {
         Debug.Log("El jugador ha muerto.");
@@ -136,4 +158,42 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+
+    public int GetCoinCount()
+    {
+        return coinCount;
+    }
+
+    public void SpendCoins(int amount)
+    {
+        coinCount -= amount;
+        UpdateCoinUI();
+    }
+
+    public void RegenerateHealth()
+    {
+        health = maxHealth;
+        UpdateUI();
+    }
+
+    public void IncreaseMaxHealth(int amount)
+    {
+        maxHealth += amount;
+        UpdateUI();
+    }
+
+    public void IncreaseMaxShield(int amount)
+    {
+        maxShield += amount;
+        UpdateUI();
+    }
+
+    public void ReduceShieldRegenDelay(float amount)
+    {
+        shieldRegenDelay -= amount;
+    }
+
+
+
 }

@@ -104,4 +104,14 @@ public class PlayerShooting : MonoBehaviour
         float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
         projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
+
+    public void RefillMissiles()
+    {
+        currentMissiles = maxMissiles;
+    }
+
+    public void IncreaseMaxMissiles(int amount)
+    {
+        maxMissiles += amount;
+    }
 }
