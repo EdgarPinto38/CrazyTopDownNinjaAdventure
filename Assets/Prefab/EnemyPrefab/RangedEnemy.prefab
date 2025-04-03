@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 278682750988630675}
   - component: {fileID: 5335539159580300553}
   - component: {fileID: -5910507452011021308}
+  - component: {fileID: 2982907620949389902}
   m_Layer: 7
   m_Name: RangedEnemy
   m_TagString: Untagged
@@ -199,3 +200,25 @@ MonoBehaviour:
   bulletPrefab: {fileID: 786795382794818007, guid: 289ce93b6f103f7469c73215a2e89101, type: 3}
   shootCooldown: 1
   stopDistance: 5
+--- !u!95 &2982907620949389902
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7993845926068555921}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: fe6305f0a1d1e9c4cb0aba49c1e63076, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

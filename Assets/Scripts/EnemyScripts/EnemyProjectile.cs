@@ -2,12 +2,27 @@ using UnityEngine;
 
 public class EnemyProjectile : MonoBehaviour
 {
-    public int damage = 10; // Daño al jugador
+    public int damage = 10; // Daï¿½o al jugador
     public float lifespan = 5f; // Tiempo de vida del proyectil
+    public float projectileSpeed = 8f; // Velocidad fija del proyectil
 
     private void Start()
     {
-        Destroy(gameObject, lifespan); // Destruir después de un tiempo
+        Destroy(gameObject, lifespan); // Destruir despuï¿½s de un tiempo
+    }
+
+    public void Launch(Vector3 targetPosition)
+    {
+        // Calcular la direcciï¿½n hacia el objetivo
+        Vector2 shootDirection = (targetPosition - transform.position).normalized;
+
+        // Asignar velocidad constante al proyectil
+        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        rb.linearVelocity = shootDirection * projectileSpeed;
+
+        // Ajustar la rotaciï¿½n del proyectil para que apunte hacia la direcciï¿½n del objetivo
+        float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -16,7 +31,7 @@ public class EnemyProjectile : MonoBehaviour
         if (player != null)
         {
             player.TakeDamage(damage);
-            Debug.Log("Proyectil impactó al jugador y causó daño.");
+            Debug.Log("Proyectil impactï¿½ al jugador y causï¿½ daï¿½o.");
             Destroy(gameObject);
         }
     }

@@ -101,7 +101,7 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    void OnEnemyDestroyed()
+    public void OnEnemyDestroyed()
     {
         enemiesRemaining--;
         score++;
@@ -272,4 +272,16 @@ public class WaveManager : MonoBehaviour
     {
         return waveNumber;
     }
+
+    private void OnDrawGizmosSelected()
+    {
+        // Establecer el color del gizmo
+        Gizmos.color = Color.green;
+
+        // Dibujar el área de spawn como un recuadro
+        Vector3 center = new Vector3(spawnAreaCenter.x, spawnAreaCenter.y, 0f); // Convertir a Vector3
+        Vector3 size = new Vector3(spawnAreaSize.x, spawnAreaSize.y, 0f);       // Convertir a Vector3
+        Gizmos.DrawWireCube(center, size);
+    }
+
 }

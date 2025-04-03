@@ -6,8 +6,10 @@ using TMPro; // Necesario para usar TextMeshPro
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f; // Velocidad de movimiento
-    private Rigidbody2D rb;
-    private Vector2 movement;
+    private Rigidbody2D rb; // Referencia al Rigidbody2D
+    private Vector2 movement; // Movimiento del jugador
+
+    public Animator animator; // Referencia al Animator
 
     public float health = 100f; // Vida del jugador
     public float shield = 50f; // Escudo del jugador
@@ -31,8 +33,6 @@ public class PlayerMovement : MonoBehaviour
 
     public TMP_Text coinCounterText; // Texto para mostrar el contador de monedas
     private int coinCount = 0; // Contador de monedas
-
-
 
     void Start()
     {
@@ -64,6 +64,9 @@ public class PlayerMovement : MonoBehaviour
         }
 
         movement = new Vector2(horizontal, vertical);
+
+        // Actualizar el parámetro "Speed" en el Animator
+        animator.SetFloat("Speed", movement.magnitude);
 
         // Regenerar escudo si no se recibe daño
         if (Time.time >= lastDamageTime + shieldRegenDelay)
@@ -133,12 +136,9 @@ public class PlayerMovement : MonoBehaviour
     {
         if (coinCounterText != null)
         {
-            //coinCounterText.text = "Monedas: " + coinCount;
             coinCounterText.text = coinCount.ToString();
         }
     }
-
-
 
     private void Die()
     {
@@ -158,7 +158,6 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
-
 
     public int GetCoinCount()
     {
@@ -213,5 +212,4 @@ public class PlayerMovement : MonoBehaviour
     {
         return shieldRegenDelay;
     }
-
 }

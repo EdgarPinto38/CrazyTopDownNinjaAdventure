@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 4585207500064030254}
   - component: {fileID: 7147029079801572953}
   - component: {fileID: 7785596409580247438}
-  - component: {fileID: 6658659808899409251}
-  m_Layer: 0
+  - component: {fileID: 6618238119062843418}
+  - component: {fileID: 2487146416885431869}
+  m_Layer: 6
   m_Name: Missile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -163,7 +164,7 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.9038904, y: 0.5684725}
   m_EdgeRadius: 0
---- !u!114 &6658659808899409251
+--- !u!114 &6618238119062843418
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -172,8 +173,32 @@ MonoBehaviour:
   m_GameObject: {fileID: 4131802988040829438}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b91ab8e172f0e55478ec94ed34dac376, type: 3}
+  m_Script: {fileID: 11500000, guid: 1a9f4f67206af544aad33a352a2da92a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 10
+  damage: 100
+  explosionRadius: 2
   lifespan: 5
+  animator: {fileID: 2487146416885431869}
+--- !u!95 &2487146416885431869
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4131802988040829438}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a18aea6f11381624493fa71dd9aa4c2f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

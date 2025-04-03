@@ -98,15 +98,17 @@ public class PlayerShooting : MonoBehaviour
         // Crear un proyectil en la posición del jugador
         GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
 
-        // Calcular la dirección hacia el mouse
+        // Calcular la posición del mouse en el mundo y la dirección hacia él
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 shootDirection = (mousePosition - transform.position).normalized;
+        mousePosition.z = 0; // Aseguramos que la posición Z sea 0 para 2D
 
-        // Asignar velocidad al proyectil
+        Vector2 shootDirection = (mousePosition - transform.position).normalized; // Direccion normalizada
+
+        // Asignar velocidad fija al proyectil
         Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
-        rb.linearVelocity = shootDirection * projectileSpeed;
+        rb.linearVelocity = shootDirection * projectileSpeed; // Velocidad constante
 
-        // Ajustar la rotación del proyectil para que apunte hacia la dirección del mouse
+        // Ajustar la rotación del proyectil para que apunte hacia el mouse
         float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
         projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
     }

@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6386490568877887155}
   - component: {fileID: -2309878280642737595}
   - component: {fileID: 7991359986669897138}
+  - component: {fileID: 970910560234475675}
   m_Layer: 7
   m_Name: NinjaBomb
   m_TagString: Untagged
@@ -197,4 +198,28 @@ MonoBehaviour:
   coinPrefab: {fileID: 1669715140113195598, guid: e808f78e553530b429439332fd464ede, type: 3}
   dropChance: 0.5
   explosionDamage: 20
-  explosionRadius: 3
+  explosionRadius: 2.24
+  explosionRange: 1
+  explosionAnimator: {fileID: 970910560234475675}
+--- !u!95 &970910560234475675
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6391322297058974613}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: a5fe579b9dca3314fbc225906fbe16f0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

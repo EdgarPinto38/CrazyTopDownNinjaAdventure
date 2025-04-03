@@ -4,13 +4,17 @@ using System.Collections;
 public class MeleeEnemy : EnemyBase
 {
     public int meleeDamage = 10; // Daño del ataque cuerpo a cuerpo
-    public float attackRange = 1f; // Distancia mínima para atacar al jugador
+    public float attackRange = 0.3f; // Distancia mínima para atacar al jugador
     public float moveSpeed = 2f; // Velocidad de movimiento del enemigo
+    public float attackCooldown = 1f; // Tiempo de espera entre ataques
+    private float lastAttackTime = 0f;
 
     private Transform playerTransform; // Referencia al transform del jugador
     private SpriteRenderer spriteRenderer; // Componente para manejar el sprite
     private Color originalColor; // Color original del sprite
     public float flashDuration = 0.2f; // Duración del color rojo
+    private Animator animator; // Referencia al Animator
+    private bool isAttacking = false; // Estado de ataque
 
     private void Start()
     {
@@ -27,14 +31,19 @@ public class MeleeEnemy : EnemyBase
         {
             originalColor = spriteRenderer.color; // Guardar el color original del sprite
         }
+
+        // Obtener el componente Animator
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
         if (playerTransform != null)
         {
-            // Moverse hacia el jugador
-            MoveTowardsPlayer();
+            if (!isAttacking) // Solo moverse si no está atacando
+            {
+                MoveTowardsPlayer();
+            }
 
             // Verificar si el jugador está dentro del rango de ataque
             if (Vector2.Distance(transform.position, playerTransform.position) <= attackRange)
@@ -46,11 +55,17 @@ public class MeleeEnemy : EnemyBase
 
     private void MoveTowardsPlayer()
     {
-        // Calcular dirección hacia el jugador
-        Vector2 direction = (playerTransform.position - transform.position).normalized;
+        if (playerTransform != null)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, playerTransform.position, moveSpeed * Time.deltaTime);
 
-        // Moverse en dirección al jugador
-        transform.position += (Vector3)(direction * moveSpeed * Time.deltaTime);
+            // Actualizar estado de movimiento en el Animator
+            if (animator != null)
+            {
+                animator.SetBool("IsMoving", true);
+                animator.SetBool("IsAttacking", false); // Asegurar que no ataque mientras se mueve
+            }
+        }
     }
 
     public override void TakeDamage(int damage)
@@ -66,25 +81,50 @@ public class MeleeEnemy : EnemyBase
 
     private IEnumerator FlashRed()
     {
-        // Cambiar el color a rojo
-        spriteRenderer.color = Color.red;
-
-        // Esperar durante el flash
-        yield return new WaitForSeconds(flashDuration);
-
-        // Restaurar el color original
-        spriteRenderer.color = originalColor;
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.color = Color.red;
+            yield return new WaitForSeconds(flashDuration);
+            spriteRenderer.color = originalColor; // Restaurar el color original
+        }
     }
 
     private void Attack()
     {
-        // Infligir daño al jugador
-        PlayerMovement player = playerTransform.GetComponent<PlayerMovement>();
-        if (player != null)
+        if (Time.time >= lastAttackTime + attackCooldown && !isAttacking)
         {
-            player.TakeDamage(meleeDamage);
-        }
+            isAttacking = true; // Activar estado de ataque
 
-       
+            // Activar animación de ataque
+            if (animator != null)
+            {
+                animator.SetBool("IsAttacking", true);
+                animator.SetBool("IsMoving", false); // Detener la animación de movimiento
+            }
+
+            // Infligir daño al jugador
+            PlayerMovement player = playerTransform.GetComponent<PlayerMovement>();
+            if (player != null)
+            {
+                player.TakeDamage(meleeDamage);
+                lastAttackTime = Time.time; // Actualizar el tiempo del último ataque
+            }
+
+            // Salir del estado de ataque después de un breve periodo
+            StartCoroutine(ExitAttackState());
+        }
+    }
+
+    private IEnumerator ExitAttackState()
+    {
+        yield return new WaitForSeconds(0.5f); // Duración personalizada del ataque
+        isAttacking = false;
+
+        // Regresar a la animación base
+        if (animator != null)
+        {
+            animator.SetBool("IsAttacking", false);
+            animator.SetBool("IsMoving", true);
+        }
     }
 }

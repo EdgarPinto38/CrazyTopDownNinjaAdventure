@@ -52,21 +52,17 @@ public class RangedEnemy : EnemyBase
 
         // Instanciar el proyectil
         GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-        if (bullet != null)
+        EnemyProjectile enemyProjectile = bullet.GetComponent<EnemyProjectile>();
+
+        if (enemyProjectile != null)
         {
-            Debug.Log("Proyectil instanciado correctamente: " + bullet.name);
+            // Lanzar el proyectil hacia la posición del jugador
+            enemyProjectile.Launch(target.position);
+            Debug.Log("Proyectil disparado correctamente.");
         }
         else
         {
-            Debug.LogError("La instancia del proyectil falló.");
-        }
-
-        // Configurar velocidad del proyectil
-        Vector3 direction = (target.position - transform.position).normalized;
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        if (rb != null)
-        {
-            rb.linearVelocity = direction * 3f; // Velocidad ajustada
+            Debug.LogError("El proyectil no tiene el componente EnemyProjectile.");
         }
     }
 }
