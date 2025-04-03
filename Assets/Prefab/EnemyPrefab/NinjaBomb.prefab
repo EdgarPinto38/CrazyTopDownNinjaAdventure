@@ -177,10 +177,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ba272c03f02244c90c8d9ca0cdbbe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  health: 1
   speed: 3
   coinPrefab: {fileID: 1669715140113195598, guid: e808f78e553530b429439332fd464ede, type: 3}
   dropChance: 0.5
+  damage: 10
 --- !u!114 &7991359986669897138
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -193,10 +194,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f933818532fa4d54a8ce9a938fc61079, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  health: 1
   speed: 3
   coinPrefab: {fileID: 1669715140113195598, guid: e808f78e553530b429439332fd464ede, type: 3}
   dropChance: 0.5
+  damage: 10
   explosionDamage: 20
   explosionRadius: 2.24
   explosionRange: 1

@@ -131,10 +131,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ba272c03f02244c90c8d9ca0cdbbe6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
-  speed: 3
+  health: 2
+  speed: 2
   coinPrefab: {fileID: 1669715140113195598, guid: e808f78e553530b429439332fd464ede, type: 3}
   dropChance: 0.5
+  damage: 10
 --- !u!114 &384266185606413470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,14 +148,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55e14323872fd443889a61efbc634e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
-  speed: 3
+  health: 2
+  speed: 2
   coinPrefab: {fileID: 1669715140113195598, guid: e808f78e553530b429439332fd464ede, type: 3}
   dropChance: 0.5
+  damage: 10
   meleeDamage: 10
   attackRange: 1
-  moveSpeed: 2
   attackCooldown: 1
+  redFlashMaterial: {fileID: 2100000, guid: abe123c2c57b5d842b86b7c46abf2af6, type: 2}
   flashDuration: 0.2
 --- !u!61 &7066900617760163237
 BoxCollider2D:

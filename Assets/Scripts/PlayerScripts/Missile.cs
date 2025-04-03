@@ -2,42 +2,44 @@ using UnityEngine;
 
 public class Missile : MonoBehaviour
 {
-    public int damage = 20; // Da�o que inflige el misil
-    public float explosionRadius = 3f; // Radio del �rea de da�o
+    public int damage = 20; // Daño que inflige el misil
+    public float explosionRadius = 3f; // Radio del área de daño
     public float lifespan = 5f; // Tiempo de vida antes de autodestruirse
-    public Animator animator; // Animator para la animaci�n de explosi�n
+    public Animator animator; // Animator para la animación de explosión
 
-    private bool hasExploded = false; // Evitar m�ltiples explosiones
+    private bool hasExploded = false; // Evitar múltiples explosiones
 
-    private void Start()
+    private void OnEnable()
     {
-        Destroy(gameObject, lifespan); // Destruir despu�s de un tiempo si no impacta
+        // Restablecer el estado del misil cuando se active desde el pool
+        hasExploded = false;
+        Invoke(nameof(ReturnToPool), lifespan);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!hasExploded && collision.gameObject.layer == LayerMask.NameToLayer("Enemies"))
         {
-            hasExploded = true; // Marcar que el misil ha explotado
+            hasExploded = true;
 
             // Detener la velocidad del misil
             Rigidbody2D rb = GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.linearVelocity = Vector2.zero; // Establecer la velocidad en 0
+                rb.linearVelocity = Vector2.zero;
             }
 
-            // Reproducir animaci�n de explosi�n
+            // Reproducir animación de explosión
             if (animator != null)
             {
-                animator.SetTrigger("Explode"); // Activar animaci�n de explosi�n
+                animator.SetTrigger("Explode");
             }
 
-            // Infligir da�o en �rea
+            // Infligir daño en área
             Explode();
 
-            // Destruir el misil despu�s de un breve tiempo (sincr�nico con la animaci�n)
-            Destroy(gameObject, 0.5f); // Ajustar tiempo seg�n la duraci�n de la animaci�n
+            // Devolver el misil al pool después de un breve tiempo
+            Invoke(nameof(ReturnToPool), 0.5f);
         }
     }
 
@@ -52,17 +54,23 @@ public class Missile : MonoBehaviour
                 EnemyBase enemy = collider.GetComponent<EnemyBase>();
                 if (enemy != null)
                 {
-                    enemy.TakeDamage(damage); // Infligir da�o al enemigo dentro del radio
+                    enemy.TakeDamage(damage);
                 }
             }
         }
 
-        Debug.Log("Misil explot� e infligi� da�o en �rea.");
+        Debug.Log("Misil explotó e infligió daño en área.");
+    }
+
+    private void ReturnToPool()
+    {
+        CancelInvoke(); // Cancelar cualquier invocación pendiente
+        gameObject.SetActive(false); // Desactivar el objeto
     }
 
     private void OnDrawGizmosSelected()
     {
-        // Visualizar el radio de la explosi�n en el editor
+        // Visualizar el radio de la explosión en el editor
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }

@@ -5,14 +5,11 @@ public class MeleeEnemy : EnemyBase
 {
     public int meleeDamage = 10; // Daño del ataque cuerpo a cuerpo
     public float attackRange = 0.3f; // Distancia mínima para atacar al jugador
-    public float moveSpeed = 2f; // Velocidad de movimiento del enemigo
     public float attackCooldown = 1f; // Tiempo de espera entre ataques
     private float lastAttackTime = 0f;
 
     private Transform playerTransform; // Referencia al transform del jugador
-    private SpriteRenderer spriteRenderer; // Componente para manejar el sprite
-    private Color originalColor; // Color original del sprite
-    public float flashDuration = 0.2f; // Duración del color rojo
+   
     private Animator animator; // Referencia al Animator
     private bool isAttacking = false; // Estado de ataque
 
@@ -25,15 +22,21 @@ public class MeleeEnemy : EnemyBase
             playerTransform = player.transform;
         }
 
-        // Obtener el componente SpriteRenderer
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            originalColor = spriteRenderer.color; // Guardar el color original del sprite
-        }
+       
 
         // Obtener el componente Animator
         animator = GetComponent<Animator>();
+
+        // Obtener la referencia al WaveManager y actualizar los atributos
+        WaveManager waveManager = FindObjectOfType<WaveManager>();
+        if (waveManager != null)
+        {
+            speed = waveManager.GetCurrentEnemySpeed(); // Actualizar velocidad
+            meleeDamage = waveManager.GetCurrentEnemyDamage(); // Actualizar daño
+
+            // Mostrar información en la consola sobre la velocidad y el daño del enemigo
+            Debug.Log($"[MeleeEnemy] Velocidad: {speed}, Daño: {meleeDamage}");
+        }
     }
 
     private void Update()
@@ -57,7 +60,7 @@ public class MeleeEnemy : EnemyBase
     {
         if (playerTransform != null)
         {
-            transform.position = Vector2.MoveTowards(transform.position, playerTransform.position, moveSpeed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, playerTransform.position, speed * Time.deltaTime);
 
             // Actualizar estado de movimiento en el Animator
             if (animator != null)
@@ -72,22 +75,10 @@ public class MeleeEnemy : EnemyBase
     {
         base.TakeDamage(damage);
 
-        // Cambiar el color del sprite a rojo
-        if (spriteRenderer != null)
-        {
-            StartCoroutine(FlashRed());
-        }
+        
     }
 
-    private IEnumerator FlashRed()
-    {
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = Color.red;
-            yield return new WaitForSeconds(flashDuration);
-            spriteRenderer.color = originalColor; // Restaurar el color original
-        }
-    }
+   
 
     private void Attack()
     {
@@ -107,6 +98,7 @@ public class MeleeEnemy : EnemyBase
             if (player != null)
             {
                 player.TakeDamage(meleeDamage);
+                Debug.Log($"[MeleeEnemy] Atacó al jugador con daño: {meleeDamage}");
                 lastAttackTime = Time.time; // Actualizar el tiempo del último ataque
             }
 

@@ -8,7 +8,8 @@ public class ExplodingEnemy : EnemyBase
     public Animator explosionAnimator; // Animator para la animación de explosión
     private bool isExploding = false; // Para evitar múltiples explosiones
     private Transform playerTransform; // Referencia al transform del jugador
-    private WaveManager waveManager; // Referencia al WaveManager
+    [HideInInspector]
+    private WaveManager explodingwaveManager; // Referencia al WaveManager
 
     private void Start()
     {
@@ -20,7 +21,12 @@ public class ExplodingEnemy : EnemyBase
         }
 
         // Buscar el WaveManager
-        waveManager = FindObjectOfType<WaveManager>();
+        explodingwaveManager = FindObjectOfType<WaveManager>();
+        if (explodingwaveManager != null)
+        {
+            speed = explodingwaveManager.GetCurrentEnemySpeed(); // Actualizar velocidad
+            explosionDamage = explodingwaveManager.GetCurrentEnemyDamage(); // Actualizar daño
+        }
     }
 
     private void Update()
@@ -81,9 +87,9 @@ public class ExplodingEnemy : EnemyBase
         }
 
         // Notificar al WaveManager que este enemigo ha sido eliminado
-        if (waveManager != null)
+        if (explodingwaveManager != null)
         {
-            waveManager.OnEnemyDestroyed();
+            explodingwaveManager.OnEnemyDestroyed();
         }
 
         // Destruir al enemigo después de la explosión

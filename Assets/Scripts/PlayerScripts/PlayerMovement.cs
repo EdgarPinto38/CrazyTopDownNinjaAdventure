@@ -103,7 +103,6 @@ public class PlayerMovement : MonoBehaviour
             health -= damage;
         }
 
-        Debug.Log("Daño recibido. Vida restante: " + health + ", Escudo restante: " + shield);
 
         if (health <= 0)
         {
@@ -142,7 +141,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("El jugador ha muerto.");
         Time.timeScale = 0f; // Detener el tiempo
 
         // Activar el panel de Game Over

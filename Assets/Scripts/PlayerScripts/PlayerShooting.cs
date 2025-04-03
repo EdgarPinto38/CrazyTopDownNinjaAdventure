@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -27,7 +26,7 @@ public class PlayerShooting : MonoBehaviour
         lastBulletTime = -bulletFireRate; // Permitir disparar balas inmediatamente al inicio
         lastMissileTime = -missileFireRate; // Permitir disparar misiles inmediatamente al inicio
 
-        missilesText.text = maxMissiles.ToString();
+        missilesText.text = currentMissiles.ToString();
     }
 
     void Update()
@@ -95,14 +94,20 @@ public class PlayerShooting : MonoBehaviour
 
     void Shoot(GameObject projectilePrefab, float projectileSpeed)
     {
-        // Crear un proyectil en la posición del jugador
-        GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+        // Usar ObjectPoolManager para obtener un proyectil del pool
+        GameObject projectile = ObjectPoolManager.Instance.SpawnFromPool(projectilePrefab, transform.position, Quaternion.identity);
+
+        if (projectile == null)
+        {
+            Debug.LogError("No se pudo obtener un proyectil del pool.");
+            return;
+        }
 
         // Calcular la posición del mouse en el mundo y la dirección hacia él
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0; // Aseguramos que la posición Z sea 0 para 2D
 
-        Vector2 shootDirection = (mousePosition - transform.position).normalized; // Direccion normalizada
+        Vector2 shootDirection = (mousePosition - transform.position).normalized; // Dirección normalizada
 
         // Asignar velocidad fija al proyectil
         Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
@@ -133,6 +138,4 @@ public class PlayerShooting : MonoBehaviour
     {
         return maxMissiles;
     }
-
-
 }

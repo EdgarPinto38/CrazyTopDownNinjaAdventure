@@ -2,25 +2,33 @@ using UnityEngine;
 
 public class EnemyProjectile : MonoBehaviour
 {
-    public int damage = 10; // Da�o al jugador
+    public int damage = 10; // Daño base al jugador
     public float lifespan = 5f; // Tiempo de vida del proyectil
     public float projectileSpeed = 8f; // Velocidad fija del proyectil
 
-    private void Start()
+    private void OnEnable()
     {
-        Destroy(gameObject, lifespan); // Destruir despu�s de un tiempo
+        // Actualizar el daño basado en la oleada actual
+        WaveManager waveManager = FindObjectOfType<WaveManager>();
+        if (waveManager != null)
+        {
+            damage = waveManager.GetCurrentEnemyDamage();
+        }
+
+        // Restablecer el tiempo de vida cuando el objeto se active desde el pool
+        Invoke(nameof(ReturnToPool), lifespan);
     }
 
     public void Launch(Vector3 targetPosition)
     {
-        // Calcular la direcci�n hacia el objetivo
+        // Calcular la dirección hacia el objetivo
         Vector2 shootDirection = (targetPosition - transform.position).normalized;
 
         // Asignar velocidad constante al proyectil
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
         rb.linearVelocity = shootDirection * projectileSpeed;
 
-        // Ajustar la rotaci�n del proyectil para que apunte hacia la direcci�n del objetivo
+        // Ajustar la rotación del proyectil para que apunte hacia la dirección del objetivo
         float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, angle);
     }
@@ -31,8 +39,16 @@ public class EnemyProjectile : MonoBehaviour
         if (player != null)
         {
             player.TakeDamage(damage);
-            Debug.Log("Proyectil impact� al jugador y caus� da�o.");
-            Destroy(gameObject);
+            Debug.Log("Proyectil impactó al jugador y causó daño: " + damage);
+
+            // Devolver el proyectil al pool
+            ReturnToPool();
         }
+    }
+
+    private void ReturnToPool()
+    {
+        CancelInvoke(); // Cancelar cualquier invocación pendiente
+        gameObject.SetActive(false); // Desactivar el objeto
     }
 }

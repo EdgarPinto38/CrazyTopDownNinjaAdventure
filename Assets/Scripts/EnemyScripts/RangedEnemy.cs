@@ -50,8 +50,15 @@ public class RangedEnemy : EnemyBase
             return;
         }
 
-        // Instanciar el proyectil
-        GameObject bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        // Usar ObjectPoolManager para obtener un proyectil del pool
+        GameObject bullet = ObjectPoolManager.Instance.SpawnFromPool(bulletPrefab, transform.position, Quaternion.identity);
+
+        if (bullet == null)
+        {
+            Debug.LogError("No se pudo obtener un proyectil del pool.");
+            return;
+        }
+
         EnemyProjectile enemyProjectile = bullet.GetComponent<EnemyProjectile>();
 
         if (enemyProjectile != null)

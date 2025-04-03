@@ -7,8 +7,13 @@ public class EnemyBase : MonoBehaviour
     protected Transform target; // Referencia al objetivo (jugador)
 
     public GameObject coinPrefab; // Prefab de la moneda
-    public float dropChance = 0.5f; // Probabilidad de soltar una moneda (50%)
+    public float dropChance = 0.4f; // Probabilidad de soltar una moneda (40%)
 
+    // Referencia al WaveManager
+    private WaveManager waveManager;
+
+    // Daño que este enemigo inflige al jugador
+    public int damage = 10;
 
     // Evento para notificar al WaveManager cuando el enemigo es destruido
     public delegate void EnemyDestroyed();
@@ -21,6 +26,15 @@ public class EnemyBase : MonoBehaviour
         if (player != null)
         {
             target = player.transform;
+        }
+
+        // Obtener la referencia al WaveManager
+        waveManager = FindObjectOfType<WaveManager>();
+        if (waveManager != null)
+        {
+            // Actualizar la velocidad y el daño basados en la dificultad actual
+            speed = waveManager.GetCurrentEnemySpeed();
+            damage = waveManager.GetCurrentEnemyDamage();
         }
     }
 
@@ -37,7 +51,6 @@ public class EnemyBase : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         health -= damage;
-        Debug.Log(gameObject.name + " recibió " + damage + " de daño. Vida restante: " + health);
 
         if (health <= 0)
         {
@@ -51,12 +64,9 @@ public class EnemyBase : MonoBehaviour
         if (Random.value <= dropChance)
         {
             Instantiate(coinPrefab, transform.position, Quaternion.identity);
-            Debug.Log("¡Moneda soltada!");
         }
 
-        OnDestroyEvent?.Invoke(); // Notificar al WaveManager
-        Debug.Log(gameObject.name + " ha sido destruido.");
+        OnDestroyEvent?.Invoke(); // Notificar al WaveManager      
         Destroy(gameObject);
     }
-
 }
