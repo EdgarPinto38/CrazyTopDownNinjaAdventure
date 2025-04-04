@@ -19,6 +19,10 @@ public class PlayerShooting : MonoBehaviour
 
     public TMP_Text missilesText;
 
+    // Flecha que apunta al mouse
+    public Transform arrow; // Referencia al objeto de la flecha
+    public float arrowDistance = 1.5f; // Distancia desde el jugador hasta la flecha
+
     void Start()
     {
         // Inicializar la cantidad de misiles disponibles y los tiempos de disparo
@@ -31,6 +35,9 @@ public class PlayerShooting : MonoBehaviour
 
     void Update()
     {
+        // Rotar la flecha hacia el mouse
+        RotateArrowToMouse();
+
         // Detectar clic izquierdo para iniciar el disparo automático de balas
         if (Input.GetMouseButtonDown(0)) // 0 = Clic izquierdo
         {
@@ -116,6 +123,27 @@ public class PlayerShooting : MonoBehaviour
         // Ajustar la rotación del proyectil para que apunte hacia el mouse
         float angle = Mathf.Atan2(shootDirection.y, shootDirection.x) * Mathf.Rad2Deg;
         projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
+    }
+
+    private void RotateArrowToMouse()
+    {
+        if (arrow == null) return;
+
+        // Obtener la posición del mouse en el mundo
+        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mousePosition.z = 0; // Asegurarse de que la posición Z sea 0 para 2D
+
+        // Calcular la dirección hacia el mouse
+        Vector2 direction = (mousePosition - transform.position).normalized;
+
+        // Calcular el ángulo de rotación
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        // Aplicar la rotación a la flecha
+        arrow.rotation = Quaternion.Euler(0, 0, angle);
+
+        // Posicionar la flecha a una distancia fija del jugador
+        arrow.position = (Vector2)transform.position + direction * arrowDistance;
     }
 
     public void RefillMissiles()
