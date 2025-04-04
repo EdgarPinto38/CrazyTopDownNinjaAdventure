@@ -163,7 +163,7 @@ public class WaveManager : MonoBehaviour
         if (scoreText != null) scoreText.text = $"Puntuación: {score}";
         if (coinText != null) coinText.text = $"Monedas: {player.GetCoinCount()}";
         // Actualizar estadísticas del jugador
-        if (lifeText != null) lifeText.text = $"Vida: {player.GetCurrentHealth()} / {player.GetMaxHealth()}";
+        if (lifeText != null) lifeText.text = $"Vida: {player.GetCurrentHealth():F0} / {player.GetMaxHealth():F0}";
         if (shieldText != null) shieldText.text = $"Escudo Máximo: {player.GetMaxShield()}";
         if (regenTimeText != null) regenTimeText.text = $"Tiempo de Regeneración: {player.GetShieldRegenDelay().ToString("F1")} segundos";
         if (missilesText != null) missilesText.text = $"Misiles: {playerShooting.GetCurrentMissiles()} / {playerShooting.GetMaxMissiles()}";
